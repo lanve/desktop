@@ -48,49 +48,17 @@ jobs:
       - name: Install zlib with vcpkg
         run: .\vcpkg\vcpkg.exe install zlib:x64-windows
 
+      # 如有其他依赖可加: .\vcpkg\vcpkg.exe install sqlite3:x64-windows openssl:x64-windows
+
       - name: Configure CMake
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
 
       - name: Build project
         run: |
           cd build
-          cmake --build . --config Release --target ALL_BUILD
+          cmake --build . --config Release
 
-      - name: Create installer (NSIS)
-        run: |
-          cd build/admin/win/nsi
-          makensis nextcloud.nsi
-
-      - name: Find installer
-        id: find_installer
-        run: |
-          $installer = Get-ChildItem -Recurse -Filter "*ZTOneCloudDISK*.exe" | Select-Object -First 1
-          echo "installer_path=$($installer.FullName)" >> $env:GITHUB_ENV
-
-      - name: Upload installer artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ZTOneCloudDISK-Setup
-          path: ${{ env.installer_path }}
-
-      - name: Create GitHub Release
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: '${{ env.APP_VERSION }}'
-          name: 'ZTOneCloudDISK ${{ env.APP_VERSION }} for Windows'
-          body: |
-            Windows 64位安装包，适用于中国中铁科学研究院定制品牌。
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload installer to Release
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ${{ env.installer_path }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # 其他打包步骤可根据需求继续添加
