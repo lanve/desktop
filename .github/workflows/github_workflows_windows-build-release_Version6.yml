@@ -60,7 +60,7 @@ jobs:
           echo "installer_path=$($installer.FullName)" >> $env:GITHUB_ENV
 
       - name: Upload installer artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ZTOneCloudDISK-Setup
           path: ${{ env.installer_path }}
