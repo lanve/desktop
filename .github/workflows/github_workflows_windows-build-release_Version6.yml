@@ -40,6 +40,9 @@ jobs:
       - name: Install pkg-config
         run: choco install pkgconfiglite -y
 
+      - name: Install zlib
+        run: choco install zlib -y
+
       - name: Configure CMake
         run: |
           mkdir build
