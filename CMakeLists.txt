@@ -238,8 +238,12 @@ if(BUILD_CLIENT)
         find_package(Inotify REQUIRED)
     endif()
     find_package(OpenSSL 1.1 REQUIRED )
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(OPENSC-LIBP11 libp11 REQUIRED IMPORTED_TARGET)
+
+    if(UNIX AND NOT APPLE)
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(OPENSC-LIBP11 libp11 REQUIRED IMPORTED_TARGET)
+    endif()
+   
 
     set(ENCRYPTION_HARDWARE_TOKEN_DRIVER_PATH "" CACHE PATH "Path to the driver for end-to-end encryption token")
     option(CLIENTSIDEENCRYPTION_ENFORCE_USB_TOKEN "Enforce use of an hardware token for end-to-end encryption" false)
