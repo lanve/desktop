@@ -32,7 +32,7 @@ jobs:
           version: '6.5.3'
           host: 'windows'
           arch: 'win64_msvc2019_64'
-          tools: 'tools_cmake,qttools'
+          tools: 'tools_cmake'
 
       - name: Install NSIS (for installer)
         run: choco install nsis -y
