@@ -1,0 +1,85 @@
+name: Windows Build & Release
+
+on:
+  push:
+    branches:
+      - master
+      - main
+      - ztonecloud-theme-win64-v1
+  pull_request:
+    branches:
+      - master
+      - main
+      - ztonecloud-theme-win64-v1
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    env:
+      APP_NAME: ZTOneCloudDISK
+      APP_VERSION: V1.0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC and dependencies
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Qt (6.5.3) and CMake
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '6.5.3'
+          host: 'windows'
+          arch: 'win64_msvc2019_64'
+          tools: 'tools_cmake,qttools'
+
+      - name: Install NSIS (for installer)
+        run: choco install nsis -y
+
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+
+      - name: Build project
+        run: |
+          cd build
+          cmake --build . --config Release --target ALL_BUILD
+
+      - name: Create installer (NSIS)
+        run: |
+          cd build/admin/win/nsi
+          makensis nextcloud.nsi
+
+      - name: Find installer
+        id: find_installer
+        run: |
+          $installer = Get-ChildItem -Recurse -Filter "*ZTOneCloudDISK*.exe" | Select-Object -First 1
+          echo "installer_path=$($installer.FullName)" >> $env:GITHUB_ENV
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ZTOneCloudDISK-Setup
+          path: ${{ env.installer_path }}
+
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: '${{ env.APP_VERSION }}'
+          name: 'ZTOneCloudDISK ${{ env.APP_VERSION }} for Windows'
+          body: |
+            Windows 64位安装包，适用于中国中铁科学研究院定制品牌。
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload installer to Release
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.installer_path }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
