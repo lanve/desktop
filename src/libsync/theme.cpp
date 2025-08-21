@@ -126,7 +126,7 @@ QString Theme::statusHeaderText(SyncResult::Status status) const
 
 bool Theme::isBranded() const
 {
-    return (appNameGUI() != QStringLiteral("Nextcloud") && NEXTCLOUD_DEV == 0);
+    return (appNameGUI() != QStringLiteral("ZTOneCloudDISK") && NEXTCLOUD_DEV == 0);
 }
 
 QString Theme::appNameGUI() const
@@ -718,7 +718,7 @@ QColor Theme::wizardHeaderBackgroundColor() const
 QPixmap Theme::wizardApplicationLogo() const
 {
     if (!Theme::isBranded()) {
-        return QPixmap(Theme::hidpiFileName(QString(Theme::themePrefix) + "colored/wizard-nextcloud.png"));
+        return QPixmap(Theme::hidpiFileName(QString(Theme::themePrefix) + "colored/wizard_logo.png"));
     }
 #ifdef APPLICATION_WIZARD_USE_CUSTOM_LOGO
     const auto useSvg = shouldPreferSvg();
