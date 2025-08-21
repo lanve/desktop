@@ -40,14 +40,19 @@ jobs:
       - name: Install pkg-config
         run: choco install pkgconfiglite -y
 
-      - name: Install zlib
-        run: choco install zlib -y
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
+
+      - name: Install zlib with vcpkg
+        run: .\vcpkg\vcpkg.exe install zlib:x64-windows
 
       - name: Configure CMake
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DWITH_LIBP11=OFF ..
+          cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release ..
 
       - name: Build project
         run: |
