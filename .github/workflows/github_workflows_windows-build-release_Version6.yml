@@ -48,13 +48,11 @@ jobs:
       - name: Install zlib with vcpkg
         run: .\vcpkg\vcpkg.exe install zlib:x64-windows
 
-      # 如有其他依赖可加: .\vcpkg\vcpkg.exe install sqlite3:x64-windows openssl:x64-windows
-
       - name: Configure CMake
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+          cmake -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release ..
 
       - name: Build project
         run: |
